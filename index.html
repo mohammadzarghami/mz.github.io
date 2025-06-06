@@ -1,27 +1,10 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mohammad Zarghami | محمد ضرغامی</title>
-    
+    <title>Mohammad Zarghami - محمد ضرغامی</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
-
-        :root {
-            --bg-color: #010409;
-            --primary-glow: #00e5ff;
-            --secondary-glow: #f72585;
-            --text-color: #c9d1d9;
-            --keyword-color: #f72585;
-            --string-color: #72f1b8;
-            --function-color: #a29bfe;
-            --border-color: rgba(0, 229, 255, 0.2);
-            --glitch-text-shadow1: 0 0 5px var(--primary-glow), 0 0 10px var(--primary-glow), 0 0 15px var(--primary-glow);
-            --glitch-text-shadow2: 0 0 5px var(--secondary-glow), 0 0 10px var(--secondary-glow), 0 0 15px var(--secondary-glow);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -29,361 +12,612 @@
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Vazirmatn', 'Fira Code', monospace;
-            overflow: hidden; /* جلوگیری از اسکرول */
-            cursor: none; /* مخفی کردن کرسر پیش‌فرض */
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
         }
 
-        /* --- پس‌زمینه ماتریسی --- */
-        #matrix-canvas {
+        /* Matrix Rain Background */
+        .matrix-rain {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-        }
-
-        /* --- افکت دنبال‌کننده ماوس --- */
-        .cursor-glow {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-glow);
-            filter: blur(25px);
-            z-index: 9999;
-            pointer-events: none; /* اجازه کلیک از روی آن */
-            transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s;
-        }
-
-        /* --- کانتینر اصلی --- */
-        .hero {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- پنجره ترمینال --- */
-        .terminal {
-            background-color: rgba(13, 17, 23, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 700px;
-            box-shadow: 0 0 40px rgba(0, 229, 255, 0.25);
-            font-family: 'Fira Code', monospace;
-            font-size: 1.1rem;
-            position: absolute; /* برای قابلیت جابجایی */
-            transition: transform 0.4s ease, opacity 0.4s ease;
-            z-index: 10;
-        }
-
-        .terminal.hidden {
-            transform: scale(0.8);
-            opacity: 0;
             pointer-events: none;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            font-size: 14px;
+            color: #00ff88;
+            animation: matrix-fall linear infinite;
+        }
+
+        @keyframes matrix-fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .glitch-text {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 20px #00ff88;
+            position: relative;
+            display: inline-block;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-2px, -2px); }
+            20% { transform: translate(2px, 2px); }
+            30% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            50% { transform: translate(-2px, -2px); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #64ffda;
+            margin-top: 10px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        /* Terminal Window */
+        .terminal-window {
+            background: rgba(13, 17, 23, 0.95);
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            margin: 20px 0;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-window:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.2);
         }
 
         .terminal-header {
+            background: linear-gradient(90deg, #ff5f56, #ffbd2e, #27ca3f);
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-            cursor: move; /* نشانگر جابجایی */
+            gap: 8px;
+            cursor: grab;
         }
 
-        .terminal-buttons {
-            display: flex;
+        .terminal-header:active {
+            cursor: grabbing;
         }
-        
-        .terminal-buttons span {
-            width: 14px;
-            height: 14px;
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            margin-left: 8px;
-            cursor: pointer;
-            transition: transform 0.2s;
+            background: rgba(255, 255, 255, 0.8);
         }
-        .terminal-buttons span:hover {
-            transform: scale(1.2);
-        }
-
-        #close-btn { background-color: #ff5f56; }
-        #reset-btn { background-color: #ffbd2e; }
-        #run-btn { background-color: #27c93f; }
 
         .terminal-title {
-            color: var(--text-color);
-            margin: 0 auto;
-            font-size: 0.9rem;
-            pointer-events: none; /* جلوگیری از تداخل با درگ */
-        }
-        
-        .terminal-body {
-            padding: 1.5rem;
-            text-align: left;
-            direction: ltr;
-            min-height: 180px;
+            margin-left: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
         }
 
-        #code-output {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px dashed var(--border-color);
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--primary-glow);
-            min-height: 50px;
-            text-align: center;
+        .terminal-content {
+            padding: 20px;
+            min-height: 200px;
+            font-family: 'SF Mono', monospace;
+            line-height: 1.6;
         }
 
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 1.3rem;
-            background-color: var(--primary-glow);
-            margin-left: 2px;
-            animation: blink 1s infinite;
+        /* Code Animation */
+        .code-animation {
+            font-size: 18px;
+            color: #00ff88;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        /* --- انیمیشن‌ها --- */
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-        
-        .terminal.shake {
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-        }
-        
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .glitch {
-            animation: glitch 1.5s linear infinite;
+        .line-number {
+            color: #64ffda;
+            font-size: 14px;
+            width: 30px;
+            text-align: right;
         }
-        
-        @keyframes glitch {
-            2%,64% { transform: translate(2px,0) skew(0.5deg); }
-            4%,60% { transform: translate(-2px,0) skew(-0.5deg); }
-            62% { transform: translate(0,0) skew(5deg); }
+
+        .typing-text {
+            overflow: hidden;
+            border-right: 2px solid #00ff88;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
         }
-        .glitch::before, .glitch::after {
-            content: attr(data-text);
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #00ff88; }
+        }
+
+        /* Interactive Elements */
+        .interactive-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
             position: absolute;
-            left: 0;
+            top: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: var(--bg-color);
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ff88;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .feature-title {
+            color: #00ff88;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            color: #64ffda;
+            font-size: 2rem;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(5deg); }
+            66% { transform: translateY(10px) rotate(-5deg); }
+        }
+
+        /* Command Prompt */
+        .command-prompt {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #00ff88;
+            font-family: monospace;
+        }
+
+        .prompt-line {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .prompt-symbol {
+            color: #00ff88;
+            margin-right: 10px;
+        }
+
+        .prompt-text {
+            color: #64ffda;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .glitch-text {
+                font-size: 2.5rem;
+            }
+            
+            .interactive-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .terminal-content {
+                padding: 15px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        /* Loading Bar */
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
             overflow: hidden;
-            top: 0;
-        }
-        .glitch::before {
-            left: 2px;
-            text-shadow: -2px 0 var(--secondary-glow);
-            animation: glitch-anim-1 2.5s infinite linear reverse;
-        }
-        .glitch::after {
-            left: -2px;
-            text-shadow: -2px 0 var(--primary-glow);
-            animation: glitch-anim-2 2s infinite linear reverse;
+            margin: 10px 0;
         }
 
-        @keyframes glitch-anim-1 {
-            0% { clip-path: inset(10% 0 80% 0); } 20% { clip-path: inset(50% 0 10% 0); } 40% { clip-path: inset(25% 0 60% 0); } 60% { clip-path: inset(70% 0 5% 0); } 80% { clip-path: inset(90% 0 2% 0); } 100% { clip-path: inset(40% 0 45% 0); }
-        }
-        @keyframes glitch-anim-2 {
-            0% { clip-path: inset(75% 0 2% 0); } 20% { clip-path: inset(15% 0 80% 0); } 40% { clip-path: inset(40% 0 33% 0); } 60% { clip-path: inset(80% 0 10% 0); } 80% { clip-path: inset(20% 0 70% 0); } 100% { clip-path: inset(60% 0 5% 0); }
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #64ffda);
+            border-radius: 2px;
+            animation: loading 2s ease-in-out infinite;
         }
 
-        .keyword { color: var(--keyword-color); }
-        .function { color: var(--function-color); }
-        .string { color: var(--string-color); }
-        .variable { color: var(--text-color); }
+        @keyframes loading {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
     </style>
 </head>
 <body>
-    
-    <canvas id="matrix-canvas"></canvas>
-    <div class="cursor-glow"></div>
+    <!-- Matrix Rain Background -->
+    <div class="matrix-rain" id="matrixRain"></div>
 
-    <div class="hero">
-        <div id="terminal" class="terminal">
-            <div id="terminal-header" class="terminal-header">
-                <div class="terminal-buttons">
-                    <span id="close-btn"></span>
-                    <span id="reset-btn"></span>
-                    <span id="run-btn"></span>
-                </div>
-                <div class="terminal-title">system:/usr/bin/mz_intro</div>
+    <!-- Floating Elements -->
+    <div class="floating-element" style="top: 10%; left: 10%;">{'}</div>
+    <div class="floating-element" style="top: 20%; right: 15%; animation-delay: -2s;">;</div>
+    <div class="floating-element" style="top: 60%; left: 5%; animation-delay: -4s;">&lt;</div>
+    <div class="floating-element" style="top: 70%; right: 10%; animation-delay: -1s;">/&gt;</div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="glitch-text">Mohammad Zarghami</h1>
+        </header>
+
+        <!-- Main Terminal -->
+        <div class="terminal-window" id="mainTerminal">
+            <div class="terminal-header">
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <span class="terminal-title">python_console.py</span>
             </div>
-            <div class="terminal-body">
-                <div id="code-content"></div>
-                <div id="code-output"></div>
+            <div class="terminal-content">
+                <div class="code-animation" id="codeAnimation">
+                    <div class="code-line">
+                        <span class="line-number">1</span>
+                        <span class="typing-text" id="typingCode">print("Mohammad Zarghami")</span>
+                    </div>
+                    <div class="code-line" id="outputLine" style="display: none;">
+                        <span class="line-number">></span>
+                        <span style="color: #64ffda;">Mohammad Zarghami</span>
+                    </div>
+                </div>
+                <div class="loading-bar" id="loadingBar" style="display: none;">
+                    <div class="loading-progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Features -->
+        <div class="interactive-section">
+            <div class="feature-card" onclick="runAnimation()">
+                <div class="feature-title">
+                    <span class="feature-icon">⚡</span>
+                    Execute Code
+                </div>
+                <p style="color: #8b949e;">Run the Python code animation</p>
+            </div>
+
+            <div class="feature-card" onclick="shakeWindow()">
+                <div class="feature-title">
+                    <span class="feature-icon">🎯</span>
+                    Shake Terminal
+                </div>
+                <p style="color: #8b949e;">Interactive terminal effects</p>
+            </div>
+
+            <div class="feature-card" onclick="toggleMatrix()">
+                <div class="feature-title">
+                    <span class="feature-icon">🌐</span>
+                    Matrix Mode
+                </div>
+                <p style="color: #8b949e;">Toggle matrix rain effect</p>
+            </div>
+
+            <div class="feature-card" onclick="changeTheme()">
+                <div class="feature-title">
+                    <span class="feature-icon">🎨</span>
+                    Theme Switch
+                </div>
+                <p style="color: #8b949e;">Change color themes</p>
+            </div>
+        </div>
+
+        <!-- Command Prompt -->
+        <div class="command-prompt">
+            <div class="prompt-line">
+                <span class="prompt-symbol">$</span>
+                <span class="prompt-text">Welcome to Mohammad Zarghami's coding environment</span>
+            </div>
+            <div class="prompt-line">
+                <span class="prompt-symbol">></span>
+                <span class="prompt-text">Status: Ready for coding adventures</span>
+            </div>
+            <div class="prompt-line">
+                <span class="prompt-symbol">#</span>
+                <span class="prompt-text">Click features above to interact</span>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const terminal = document.getElementById('terminal');
-            const terminalHeader = document.getElementById('terminal-header');
-            const codeContent = document.getElementById('code-content');
-            const codeOutput = document.getElementById('code-output');
-            const runBtn = document.getElementById('run-btn');
-            const resetBtn = document.getElementById('reset-btn');
-            const closeBtn = document.getElementById('close-btn');
-            const cursorGlow = document.querySelector('.cursor-glow');
-
-            let isTyping = false;
+        // Matrix Rain Effect
+        function createMatrixRain() {
+            const matrixContainer = document.getElementById('matrixRain');
+            const characters = '01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}|;:,.<>?';
             
-            // --- 1. انیمیشن پس‌زمینه ماتریسی ---
-            const canvas = document.getElementById('matrix-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*()[]{}<>/|";
-            const charsArray = chars.split('');
-            const fontSize = 14;
-            const columns = canvas.width / fontSize;
-            const drops = Array(Math.floor(columns)).fill(1);
-
-            function drawMatrix() {
-                ctx.fillStyle = 'rgba(1, 4, 9, 0.05)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = 'var(--primary-glow)';
-                ctx.font = fontSize + 'px Fira Code';
-                for (let i = 0; i < drops.length; i++) {
-                    const text = charsArray[Math.floor(Math.random() * charsArray.length)];
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                        drops[i] = 0;
-                    }
-                    drops[i]++;
+            for (let i = 0; i < 50; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDelay = Math.random() * 2 + 's';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                let columnText = '';
+                for (let j = 0; j < 20; j++) {
+                    columnText += characters.charAt(Math.floor(Math.random() * characters.length)) + '<br>';
                 }
+                column.innerHTML = columnText;
+                
+                matrixContainer.appendChild(column);
             }
-            setInterval(drawMatrix, 35);
+        }
 
+        // Code Animation
+        function runAnimation() {
+            const codeLine = document.getElementById('typingCode');
+            const outputLine = document.getElementById('outputLine');
+            const loadingBar = document.getElementById('loadingBar');
+            
+            // Reset animation
+            codeLine.style.animation = 'none';
+            codeLine.offsetHeight; // Trigger reflow
+            codeLine.style.animation = 'typing 3s steps(40, end), blink-caret 0.75s step-end infinite';
+            
+            // Show loading bar
+            loadingBar.style.display = 'block';
+            
+            setTimeout(() => {
+                loadingBar.style.display = 'none';
+                outputLine.style.display = 'flex';
+                outputLine.style.animation = 'fadeInUp 0.5s ease-out';
+            }, 3000);
+            
+            setTimeout(() => {
+                outputLine.style.display = 'none';
+            }, 6000);
+        }
 
-            // --- 2. افکت دنبال‌کننده ماوس ---
-            document.addEventListener('mousemove', (e) => {
-                cursorGlow.style.left = e.clientX + 'px';
-                cursorGlow.style.top = e.clientY + 'px';
+        // Shake Window Effect
+        function shakeWindow() {
+            const terminal = document.getElementById('mainTerminal');
+            terminal.style.animation = 'shake 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                terminal.style.animation = '';
+            }, 500);
+        }
+
+        // Add shake keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Toggle Matrix Effect
+        let matrixVisible = true;
+        function toggleMatrix() {
+            const matrix = document.getElementById('matrixRain');
+            matrixVisible = !matrixVisible;
+            matrix.style.opacity = matrixVisible ? '0.1' : '0';
+        }
+
+        // Theme Changer
+        const themes = [
+            { primary: '#00ff88', secondary: '#64ffda', bg: 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%)' },
+            { primary: '#ff6b6b', secondary: '#feca57', bg: 'linear-gradient(135deg, #2c1810 0%, #3d2914 50%, #4a1810 100%)' },
+            { primary: '#4ecdc4', secondary: '#45b7d1', bg: 'linear-gradient(135deg, #0f3460 0%, #16537e 50%, #0f3460 100%)' },
+            { primary: '#a8e6cf', secondary: '#88d8c0', bg: 'linear-gradient(135deg, #1e3c3c 0%, #2d5656 50%, #1e3c3c 100%)' }
+        ];
+        
+        let currentTheme = 0;
+        function changeTheme() {
+            currentTheme = (currentTheme + 1) % themes.length;
+            const theme = themes[currentTheme];
+            
+            document.documentElement.style.setProperty('--primary-color', theme.primary);
+            document.documentElement.style.setProperty('--secondary-color', theme.secondary);
+            document.body.style.background = theme.bg;
+            
+            // Update text colors
+            const elements = document.querySelectorAll('.glitch-text, .typing-text, .feature-title, .prompt-symbol');
+            elements.forEach(el => {
+                el.style.color = theme.primary;
             });
-            document.addEventListener('mousedown', () => cursorGlow.style.transform = 'translate(-50%, -50%) scale(0.8)');
-            document.addEventListener('mouseup', () => cursorGlow.style.transform = 'translate(-50%, -50%) scale(1)');
+        }
 
-            // --- 3. قابلیت جابجایی پنجره ترمینال ---
-            let isDragging = false;
-            let offsetX, offsetY;
+        // Draggable Terminal
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
 
-            terminalHeader.addEventListener('mousedown', (e) => {
+        const terminal = document.getElementById('mainTerminal');
+        const header = terminal.querySelector('.terminal-header');
+
+        header.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            if (e.target === header || header.contains(e.target)) {
                 isDragging = true;
-                offsetX = e.clientX - terminal.offsetLeft;
-                offsetY = e.clientY - terminal.offsetTop;
-                terminal.style.transition = 'none'; // برای حرکت نرم
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    terminal.style.left = (e.clientX - offsetX) + 'px';
-                    terminal.style.top = (e.clientY - offsetY) + 'px';
-                }
-            });
-
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-                terminal.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
-            });
-
-
-            // --- 4. منطق دکمه‌ها و انیمیشن تایپ ---
-            const codeLines = [
-                { text: 'print', type: 'function' },
-                { text: '(', type: 'variable' },
-                { text: '"Mohammad Zarghami"', type: 'string' },
-                { text: ')', type: 'variable' }
-            ];
-            const outputText = 'Mohammad Zarghami';
-
-            function sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
             }
+        }
 
-            async function typeWriter() {
-                isTyping = true;
-                runBtn.style.pointerEvents = 'none'; // غیرفعال کردن دکمه هنگام اجرا
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
 
-                // لرزش
-                terminal.classList.add('shake');
-                await sleep(500);
-                terminal.classList.remove('shake');
-                
-                // تایپ کد
-                for (const line of codeLines) {
-                    const span = document.createElement('span');
-                    span.className = line.type;
-                    codeContent.appendChild(span);
-                    for (const char of line.text) {
-                        span.innerHTML += char;
-                        await sleep(60);
-                    }
-                }
-                codeContent.innerHTML += '<span class="cursor"></span>';
-                
-                await sleep(1000); // مکث قبل از پاک کردن
-                
-                // پاک کردن کد
-                const currentCode = codeContent.innerHTML;
-                for (let i = currentCode.length - '<span class="cursor"></span>'.length; i >= 0; i--) {
-                    codeContent.innerHTML = currentCode.substring(0, i) + '<span class="cursor"></span>';
-                    await sleep(20);
-                }
-                
-                await sleep(500); // مکث قبل از نمایش خروجی
+                xOffset = currentX;
+                yOffset = currentY;
 
-                // نمایش خروجی با افکت گلیچ
-                codeOutput.setAttribute('data-text', outputText);
-                codeOutput.classList.add('glitch');
-                for (const char of outputText) {
-                    codeOutput.innerHTML += char;
-                    await sleep(100);
-                }
-                isTyping = false;
+                terminal.style.transform = `translate(${currentX}px, ${currentY}px)`;
             }
+        }
 
-            function resetTerminal() {
-                if (isTyping) return;
-                codeContent.innerHTML = '';
-                codeOutput.innerHTML = '';
-                codeOutput.classList.remove('glitch');
-                runBtn.style.pointerEvents = 'auto';
-                if(terminal.classList.contains('hidden')) {
-                    terminal.classList.remove('hidden');
-                }
-            }
+        function dragEnd() {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
 
-            runBtn.addEventListener('click', () => {
-                if (!isTyping) {
-                    resetTerminal();
-                    typeWriter();
-                }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createMatrixRain();
+            
+            // Auto-run code animation on load
+            setTimeout(() => {
+                runAnimation();
+            }, 1000);
+            
+            // Add floating animations to cards
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.classList.add('fade-in-up');
             });
-
-            resetBtn.addEventListener('click', resetTerminal);
-            closeBtn.addEventListener('click', () => terminal.classList.add('hidden'));
-
         });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                runAnimation();
+            }
+            if (e.ctrlKey && e.key === 't') {
+                changeTheme();
+                e.preventDefault();
+            }
+            if (e.ctrlKey && e.key === 'm') {
+                toggleMatrix();
+                e.preventDefault();
+            }
+        });
+
+        // Random glitch effects
+        setInterval(() => {
+            const glitchText = document.querySelector('.glitch-text');
+            glitchText.style.textShadow = `
+                ${Math.random() * 4 - 2}px ${Math.random() * 4 - 2}px 0 #ff0000,
+                ${Math.random() * 4 - 2}px ${Math.random() * 4 - 2}px 0 #00ff00,
+                ${Math.random() * 4 - 2}px ${Math.random() * 4 - 2}px 0 #0000ff,
+                0 0 20px #00ff88
+            `;
+            
+            setTimeout(() => {
+                glitchText.style.textShadow = '0 0 20px #00ff88';
+            }, 100);
+        }, 3000);
     </script>
 </body>
 </html>
